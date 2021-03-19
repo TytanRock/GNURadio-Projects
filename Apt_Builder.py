@@ -1,4 +1,4 @@
-import sys, time, socket
+import sys, time, socket, threading
 from PyQt6.QtGui import QPixmap, QImage, QColor
 from PyQt6.QtWidgets import QMainWindow, QApplication, QLabel
 from PyQt6.QtCore import QTimer, Qt
@@ -32,29 +32,61 @@ app = QApplication(sys.argv)
 w = MainWindow()
 w.show()
 
-UDP_IP = "127.0.0.1"
-UDP_PORT = 7762
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind((UDP_IP, UDP_PORT))
+keepRunning = True
+lock = threading.Lock()
+toAdd = []
+def loop():
+    global w
+    global keepRunning
+    global lock
+    global toAdd
+
+    UDP_IP = "127.0.0.1"
+    UDP_PORT = 7762
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind((UDP_IP, UDP_PORT))
+
+    while keepRunning:
+        try:
+            sock.settimeout(1)
+            data, addr = sock.recvfrom(2080)
+            lock.acquire()
+            toAdd.extend(data)
+            lock.release()
+        except socket.timeout:
+            pass
+
+
 x = 0
 y = 0
-def run():
+def update_gui():
+    global toAdd
     global x
     global y
-    global sock
-    global w
-    data, addr = sock.recvfrom(2080)
-    for i in range(len(data)):
-        w.updateImage(x, y, data[i])
+    lock.acquire()
+    for i in range(len(toAdd)):
+        w.updateImage(2079-x, y, toAdd[i])
         x += 1
-        if x >= 2080:
+        if x > 2079:
             x = 0
             y += 1
-    
+    toAdd = []
+    lock.release()
     w.refreshImage()
 
+
+loop_thread = threading.Thread(target=loop)
+loop_thread.start()
+
 timer = QTimer()
-timer.timeout.connect(run)
+timer.timeout.connect(update_gui)
 timer.start(1)
 
-sys.exit(app.exec())
+# Run the app until we close
+app_ret = app.exec()
+# Tell thread to finish
+keepRunning = False
+# Wait for thread to finish
+loop_thread.join()
+# Exit
+sys.exit(app_ret)
