@@ -27,6 +27,10 @@ class MainWindow(QMainWindow):
         self.label.setPixmap(pixmap)
         self.setCentralWidget(self.label)
 
+    def saveImage(self):
+        name = time.strftime("%Y %m %d-%H %M %S")
+        self.image.save('NOAA ' + str(name) + '.png')
+
 
 app = QApplication(sys.argv)
 w = MainWindow()
@@ -88,5 +92,7 @@ app_ret = app.exec()
 keepRunning = False
 # Wait for thread to finish
 loop_thread.join()
+update_gui()
+w.saveImage()
 # Exit
 sys.exit(app_ret)
