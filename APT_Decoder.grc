@@ -32,6 +32,48 @@ options:
     state: enabled
 
 blocks:
+- name: high_cutoff
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: High_Cutoff
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: 2e3
+    step: '1'
+    stop: 10e3
+    value: 4.2e3
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [793, 16]
+    rotation: 0
+    state: true
+- name: low_cutoff
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: Low_Cutoff
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '1'
+    stop: 2e3
+    value: '500'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [645, 16]
+    rotation: 0
+    state: true
 - name: samp_rate
   id: variable
   parameters:
@@ -74,6 +116,27 @@ blocks:
     coordinate: [287, 22]
     rotation: 0
     state: true
+- name: transition_width
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: Transition_Width
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '1'
+    stop: 1e3
+    value: '200'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [935, 16]
+    rotation: 0
+    state: true
 - name: volume
   id: variable_qtgui_range
   parameters:
@@ -114,7 +177,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [387, 377]
+    coordinate: [294, 363]
     rotation: 0
     state: true
 - name: audio_sink_0
@@ -131,7 +194,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1015, 408]
+    coordinate: [1067, 392]
     rotation: 0
     state: true
 - name: band_pass_filter_0
@@ -143,12 +206,12 @@ blocks:
     comment: ''
     decim: '1'
     gain: '1'
-    high_cutoff_freq: '4200'
+    high_cutoff_freq: high_cutoff
     interp: '1'
-    low_cutoff_freq: '500'
+    low_cutoff_freq: low_cutoff
     maxoutbuf: '0'
     minoutbuf: '0'
-    samp_rate: '11025'
+    samp_rate: '22050'
     type: fir_filter_fff
     width: '200'
     win: firdes.WIN_HAMMING
@@ -293,7 +356,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [760, 401]
+    coordinate: [824, 392]
     rotation: 0
     state: true
 - name: blocks_null_sink_0
@@ -310,7 +373,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [611, 422]
+    coordinate: [721, 452]
     rotation: 0
     state: true
 - name: blocks_skiphead_0
@@ -337,17 +400,17 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    eof: 'True'
+    eof: 'False'
     ipaddr: 127.0.0.1
     port: '7762'
-    psize: '1472'
+    psize: '2080'
     type: byte
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2430, 264]
+    coordinate: [2429, 264]
     rotation: 0
     state: true
 - name: blocks_wavfile_source_0
@@ -427,7 +490,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [655, 501]
+    coordinate: [641, 528]
     rotation: 0
     state: true
 - name: rational_resampler_xxx_0
@@ -826,12 +889,13 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [91, 408]
+    coordinate: [15, 416]
     rotation: 0
     state: true
 
 connections:
 - [analog_fm_demod_cf_0, '0', blocks_null_sink_0, '0']
+- [band_pass_filter_0, '0', blocks_multiply_const_vxx_0_0, '0']
 - [band_pass_filter_0, '0', rational_resampler_xxx_0, '0']
 - [blocks_complex_to_mag_0, '0', rational_resampler_xxx_1, '0']
 - [blocks_float_to_complex_0, '0', blocks_complex_to_mag_0, '0']
@@ -843,7 +907,6 @@ connections:
 - [blocks_multiply_const_vxx_0_0, '0', audio_sink_0, '0']
 - [blocks_skiphead_0, '0', blocks_keep_one_in_n_0_0, '0']
 - [blocks_wavfile_source_0, '0', band_pass_filter_0, '0']
-- [blocks_wavfile_source_0, '0', blocks_multiply_const_vxx_0_0, '0']
 - [rational_resampler_xxx_0, '0', blocks_keep_one_in_n_0, '0']
 - [rational_resampler_xxx_0, '0', blocks_skiphead_0, '0']
 - [rational_resampler_xxx_1, '0', blocks_multiply_const_vxx_0, '0']
